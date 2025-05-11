@@ -7,3 +7,6 @@
 [submodule "si5351-wspr-transmitter-platformino/si5351-wspr-transmitter-platformino/lib/Si5351Arduino"]
 	path = si5351-wspr-transmitter-platformino/si5351-wspr-transmitter-platformino/lib/Si5351Arduino
 	url = git@github.com:etherkit/Si5351Arduino.git
+[submodule "si5351-wspr-transmitter-platformino/lib/Si5351Arduino"]
+	path = si5351-wspr-transmitter-platformino/lib/Si5351Arduino
+	url = git@github.com:etherkit/Si5351Arduino.git
