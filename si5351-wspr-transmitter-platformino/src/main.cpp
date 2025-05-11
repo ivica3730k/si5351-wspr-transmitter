@@ -3,6 +3,10 @@
 
 #include <Arduino.h>
 
+#ifdef DEBUG_TOOLS_I2C_SCANNER
+#include "DebugTools.h"
+#endif
+
 #ifdef ESP8266_USE_NTP_TIME
 #include <ESP8266WiFi.h>
 #endif
@@ -13,55 +17,55 @@
 
 #if defined(ESP8266_USE_NTP_TIME) || defined(ESP32_USE_NTP_TIME)
 #include "WSPRTxSyncNTP.h"
-
-const char *ssid = WIFI_SSID;
-const char *pass = WIFI_PASSWORD;
-
-WSPRTxSyncNTP tx_sync = WSPRTxSyncNTP();
-
-#elif USE_DUMMY_TIME
+const char *wifi_ssid = WIFI_SSID;
+const char *wifi_password = WIFI_PASSWORD;
+WSPRTxSyncNTP tx_sync("uk.pool.ntp.org");
+#elif defined(USE_DUMMY_TIME)
 #include "WSPRTxSyncDummy.h"
-WSPRTxSyncDummy tx_sync = WSPRTxSyncDummy(10000);
-
+WSPRTxSyncDummy tx_sync(10000);
 #endif
 
 #ifdef USE_SI5351_TX_HARDWARE
 #include "TxHardwareSI5351.h"
-
-TxHardwareSI5351 tx_hardware = TxHardwareSI5351(0x60);
-
-#elif USE_DUMMY_TX_HARDWARE
+TxHardwareSi5351 tx_hardware(0x60);
+#elif defined(USE_DUMMY_TX_HARDWARE)
 #include "TxHardwareDummy.h"
-
-TxHardwareDummy tx_hardware = TxHardwareDummy(10000);
-
+TxHardwareDummy tx_hardware(10000);
 #endif
 
-TxHardwareTxParameters keep_warm_params(1000000, -27000, TxHardwareTxParameters::LOW_POWER);
-TxHardwareTxParameters tx_params_40m(14095600 + 1500, -27000, TxHardwareTxParameters::HIGH_POWER);
+TxHardwareTxParameters keep_warm_params(1000000, -27000,
+                                        TxHardwareTxParameters::DriveStrength::LOW_POWER);
+TxHardwareTxParameters tx_params_40m(14095600 + 1500, -27000,
+                                     TxHardwareTxParameters::DriveStrength::HIGH_POWER);
 
 uint8_t wspr_message[WSPR_SYMBOL_COUNT];
-const char *callsign = WSPR_CALLSIGN;
-const char *gridsquare = WSPR_GRIDSQUARE;
-int dbm = WSPR_DBM;
+const char *wspr_callsign = WSPR_CALLSIGN;
+const char *wspr_gridsquare = WSPR_GRIDSQUARE;
+int wspr_dbm = WSPR_DBM;
 
 void setup()
 {
     Serial.begin(115200);
-    JTEncode jtencode;
-    jtencode.wspr_encode(callsign, gridsquare, dbm, wspr_message);
+
+#ifdef DEBUG_TOOLS_I2C_SCANNER
+    debug_tools::scan_i2c_bus();
+#endif
+
+    JTEncode encoder;
+    encoder.wspr_encode(wspr_callsign, wspr_gridsquare, wspr_dbm, wspr_message);
 
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
 
 #if defined(ESP8266_USE_NTP_TIME) || defined(ESP32_USE_NTP_TIME)
-
 #ifdef DEBUG_WIFI_CONNECTING
     Serial.print("Connecting to ");
-    Serial.println(ssid);
+    Serial.println(wifi_ssid);
 #endif
+
     WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid, pass);
+    WiFi.begin(wifi_ssid, wifi_password);
+
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(500);
@@ -80,11 +84,12 @@ void setup()
 
 void loop()
 {
-    int miliseconds_to_next_tx = tx_sync.get_miliseconds_to_next_tx_period();
+    uint32_t milliseconds_to_next_tx = tx_sync.get_milliseconds_to_next_tx_period();
     Serial.print("Milliseconds to next TX: ");
-    Serial.println(miliseconds_to_next_tx);
-    uint32_t target_millis = millis() + miliseconds_to_next_tx;
-    while (millis() < target_millis)
+    Serial.println(milliseconds_to_next_tx);
+
+    uint32_t target_time = millis() + milliseconds_to_next_tx;
+    while (millis() < target_time)
     {
         yield();
     }

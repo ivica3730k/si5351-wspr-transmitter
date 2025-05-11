@@ -6,34 +6,31 @@
 class TxHardwareDummy : public TxHardware
 {
   public:
-    TxHardwareDummy(uint32_t dummy_tx_time_millis)
+    TxHardwareDummy(uint32_t tx_duration_ms)
     {
-        this->dummy_tx_time_millis = dummy_tx_time_millis;
+        this->tx_duration_millis = tx_duration_ms;
     }
-
-    void transmit_wspr_message(TxHardwareTxParameters tx_params, uint8_t *message) override
+    void transmit_wspr_message(const TxHardwareTxParameters &tx_params, uint8_t *message) override
     {
 #ifdef DEBUG_TX_HARDWARE_DUMMY
-        Serial.println("Dummy TxHardware: Simulating transmission for");
-        Serial.print(dummy_tx_time_millis);
+        Serial.print("Dummy TxHardware: Simulating transmission for ");
+        Serial.print(tx_duration_millis);
         Serial.println(" milliseconds.");
 #endif
-
         uint32_t start_time = millis();
-        while (millis() - start_time < dummy_tx_time_millis)
+        while (millis() - start_time < tx_duration_millis)
         {
 #ifdef BOARD_FAMILY_ESPRESSIF
-            yield(); // Prevent watchdog reset
+            yield();
 #endif
         }
-
 #ifdef DEBUG_TX_HARDWARE_DUMMY
         Serial.println("Dummy TxHardware: Transmission complete.");
 #endif
     }
 
   private:
-    uint32_t dummy_tx_time_millis = 0;
+    uint32_t tx_duration_millis = 0;
 };
 
 #endif // TXHARDWARE_DUMMY_H

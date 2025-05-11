@@ -3,11 +3,11 @@
 
 #include "JTEncode.h"
 
-#include <stdint.h>
+#include <Arduino.h>
 
 struct TxHardwareTxParameters
 {
-    enum DriveStrength
+    enum class DriveStrength : uint8_t
     {
         LOW_POWER = 1,
         MEDIUM_POWER = 2,
@@ -18,17 +18,19 @@ struct TxHardwareTxParameters
     int32_t correction;
     DriveStrength drive_strength;
 
-    // Constructor
-    TxHardwareTxParameters(uint64_t freq, int32_t corr, DriveStrength power)
-        : frequency(freq), correction(corr), drive_strength(power)
+    TxHardwareTxParameters(uint64_t freq, int32_t corr, DriveStrength strength)
     {
+        this->frequency = freq;
+        this->correction = corr;
+        this->drive_strength = strength;
     }
 };
 
 class TxHardware
 {
   public:
-    virtual void transmit_wspr_message(TxHardwareTxParameters tx_params, uint8_t *message) = 0;
+    virtual void transmit_wspr_message(const TxHardwareTxParameters &tx_params,
+                                       uint8_t *message) = 0;
 };
 
 #endif // TXHARDWARE_H
