@@ -3,7 +3,7 @@
 
 class WSPRTxSync
 {
-public:
+  public:
     virtual uint32_t get_miliseconds_to_next_tx_period() const = 0;
 };
 
