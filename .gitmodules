@@ -1,3 +1,6 @@
 [submodule "si5351-wspr-transmitter-platformino/lib/JTEncode"]
 	path = si5351-wspr-transmitter-platformino/lib/JTEncode
 	url = git@github.com:ivica3730k/JTEncode.git
+[submodule "si5351-wspr-transmitter-platformino/lib/si5351-wspr-transmitter-platformino/lib/Si5351Arduino"]
+	path = si5351-wspr-transmitter-platformino/lib/si5351-wspr-transmitter-platformino/lib/Si5351Arduino
+	url = git@github.com:etherkit/Si5351Arduino.git
