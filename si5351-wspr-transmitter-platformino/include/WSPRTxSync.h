@@ -4,7 +4,7 @@
 class WSPRTxSync
 {
 public:
-    virtual int get_seconds_to_next_tx_period() const = 0;
+    virtual uint32_t get_miliseconds_to_next_tx_period() const = 0;
 };
 
 #endif // WSPRTX_SYNC_H

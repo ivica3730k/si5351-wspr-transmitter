@@ -1,0 +1,3 @@
+[submodule "si5351-wspr-transmitter-platformino/lib/JTEncode"]
+	path = si5351-wspr-transmitter-platformino/lib/JTEncode
+	url = git@github.com:ivica3730k/JTEncode.git
