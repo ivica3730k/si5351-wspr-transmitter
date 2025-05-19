@@ -1,11 +1,8 @@
+#include "DebugTools.h"
 #include "JTEncode.h"
 #include "secrets.h"
 
 #include <Arduino.h>
-
-#ifdef DEBUG_TOOLS_I2C_SCANNER
-#include "DebugTools.h"
-#endif
 
 #ifdef ESP8266_USE_NTP_TIME
 #include <ESP8266WiFi.h>
@@ -33,7 +30,7 @@ TxHardwareSi5351 tx_hardware(0x60);
 TxHardwareDummy tx_hardware(10000);
 #endif
 
-TxHardwareTxParameters keep_warm_params(1000000, -27000,
+TxHardwareTxParameters keep_warm_params(100000, -27000,
                                         TxHardwareTxParameters::DriveStrength::LOW_POWER);
 TxHardwareTxParameters tx_params_40m(14095600 + 1500, -27000,
                                      TxHardwareTxParameters::DriveStrength::HIGH_POWER);
@@ -43,12 +40,58 @@ const char *wspr_callsign = WSPR_CALLSIGN;
 const char *wspr_gridsquare = WSPR_GRIDSQUARE;
 int wspr_dbm = WSPR_DBM;
 
+#include "FilterHardware.h"
+FilterHardware filter_hardware(0x20);
+
 void setup()
 {
     Serial.begin(115200);
+    Wire.begin();
 
 #ifdef DEBUG_TOOLS_I2C_SCANNER
     debug_tools::scan_i2c_bus();
+#endif
+    filter_hardware.begin();
+
+#ifdef TEST_SUB_MEGAHERTZ_DUMP
+    filter_hardware.enable_sub_megahertz_dump();
+    tx_hardware.output_constant_tone(keep_warm_params);
+    block_forever();
+#endif
+
+
+#ifdef TEST_20M_LOW_PASS_FILTER_WITH_20M_SIGNAL
+    filter_hardware.enable_20m_low_pass_filter();
+    filter_hardware.disable_sub_megahertz_dump();
+    TxHardwareTxParameters tx_params_20m(14095600, -27000,
+                                         TxHardwareTxParameters::DriveStrength::HIGH_POWER);
+    tx_hardware.output_constant_tone(tx_params_20m);
+    block_forever();
+#endif
+
+#ifdef TEST_10M_LOW_PASS_FILTER_WITH_10M_SIGNAL
+    filter_hardware.enable_10m_low_pass_filter();
+    filter_hardware.disable_sub_megahertz_dump();
+    TxHardwareTxParameters tx_params_10m(28095600, -27000,
+                                         TxHardwareTxParameters::DriveStrength::HIGH_POWER);
+    tx_hardware.output_constant_tone(tx_params_10m);
+    block_forever();
+#endif
+
+#ifdef TEST_2OM_SIGNAL_ALL_FILTERS_OFF
+    filter_hardware.disable_all_filters();
+    TxHardwareTxParameters tx_params_20m(14095600, -27000,
+                                         TxHardwareTxParameters::DriveStrength::HIGH_POWER);
+    tx_hardware.output_constant_tone(tx_params_20m);
+    block_forever();
+#endif
+
+#ifdef TEST_10M_SIGNAL_ALL_FILTERS_OFF
+    filter_hardware.disable_all_filters();
+    TxHardwareTxParameters tx_params_10m(28095600, -27000,
+                                         TxHardwareTxParameters::DriveStrength::HIGH_POWER);
+    tx_hardware.output_constant_tone(tx_params_10m);
+    block_forever();
 #endif
 
     JTEncode encoder;

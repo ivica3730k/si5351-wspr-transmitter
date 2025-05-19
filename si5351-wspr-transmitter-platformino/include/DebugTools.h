@@ -53,4 +53,15 @@ inline void scan_i2c_bus()
 
 } // namespace debug_tools
 
+void block_forever()
+{
+    while (true)
+    {
+#ifdef BOARD_FAMILY_ESPRESSIF
+        yield();
+#endif
+    }
+}
+
 #endif // DEBUG_TOOLS_H
+

@@ -87,7 +87,7 @@ class TxHardwareSi5351 : public TxHardware
         Serial.println(tone_mhz);
 #endif
 
-        this->si5351->set_freq(tone_mhz, this->clock_output);
+        uint8_t output_code = this->si5351->set_freq(tone_mhz, this->clock_output);
 
 #ifdef DEBUG_TX_HARDWARE_SI5351
         Serial.print("Si5351 output code: ");
