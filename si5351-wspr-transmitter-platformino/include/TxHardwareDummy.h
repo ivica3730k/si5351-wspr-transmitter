@@ -12,7 +12,7 @@ class TxHardwareDummy : public TxHardware
     }
     void transmit_wspr_message(const TxHardwareTxParameters &tx_params, uint8_t *message) override
     {
-#ifdef DEBUG_TX_HARDWARE_DUMMY
+#ifdef DEBUG_TX_HARDWARE_USE_DUMMY
         Serial.print("Dummy TxHardware: Simulating transmission for ");
         Serial.print(tx_duration_millis);
         Serial.println(" milliseconds.");
@@ -24,7 +24,7 @@ class TxHardwareDummy : public TxHardware
             yield();
 #endif
         }
-#ifdef DEBUG_TX_HARDWARE_DUMMY
+#ifdef DEBUG_TX_HARDWARE_USE_DUMMY
         Serial.println("Dummy TxHardware: Transmission complete.");
 #endif
     }

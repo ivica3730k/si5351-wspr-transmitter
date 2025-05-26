@@ -36,10 +36,16 @@ class FilterHardware
         this->mcp->pinMode(MCP23017Pin::GPB2, OUTPUT);
         this->mcp->pinMode(MCP23017Pin::GPA3, OUTPUT);
         this->mcp->pinMode(MCP23017Pin::GPB3, OUTPUT);
+        // pinmodes for 15m low pass filter
+        this->mcp->pinMode(MCP23017Pin::GPA4, OUTPUT);
+        this->mcp->pinMode(MCP23017Pin::GPB4, OUTPUT);
+        this->mcp->pinMode(MCP23017Pin::GPA5, OUTPUT);
+        this->mcp->pinMode(MCP23017Pin::GPB5, OUTPUT);
     }
 
     void enable_sub_megahertz_dump()
     {
+        this->disable_all_filters();
         this->mcp->digitalWrite(MCP23017Pin::GPA7, LOW);
         this->mcp->digitalWrite(MCP23017Pin::GPB7, LOW);
     }
@@ -55,6 +61,7 @@ class FilterHardware
         this->disable_sub_megahertz_dump();
         this->disable_20m_low_pass_filter();
         this->disable_10m_low_pass_filter();
+        this->disable_15m_low_pass_filter();
     }
 
     void enable_20m_low_pass_filter()
@@ -89,6 +96,23 @@ class FilterHardware
         this->mcp->digitalWrite(MCP23017Pin::GPB2, LOW);
         this->mcp->digitalWrite(MCP23017Pin::GPA3, HIGH);
         this->mcp->digitalWrite(MCP23017Pin::GPB3, HIGH);
+    }
+
+    void enable_15m_low_pass_filter()
+    {
+        this->disable_all_filters();
+        this->mcp->digitalWrite(MCP23017Pin::GPA4, HIGH);
+        this->mcp->digitalWrite(MCP23017Pin::GPB4, HIGH);
+        this->mcp->digitalWrite(MCP23017Pin::GPA5, LOW);
+        this->mcp->digitalWrite(MCP23017Pin::GPB5, LOW);
+    }
+
+    void disable_15m_low_pass_filter()
+    {
+        this->mcp->digitalWrite(MCP23017Pin::GPA4, LOW);
+        this->mcp->digitalWrite(MCP23017Pin::GPB4, LOW);
+        this->mcp->digitalWrite(MCP23017Pin::GPA5, HIGH);
+        this->mcp->digitalWrite(MCP23017Pin::GPB5, HIGH);
     }
 
   private:

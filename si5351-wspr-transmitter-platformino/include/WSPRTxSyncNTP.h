@@ -8,9 +8,9 @@
 #include <Arduino.h>
 #include <WiFiUdp.h>
 
-#ifdef ESP8266_USE_NTP_TIME
+#ifdef TIME_USE_ESP8266_WIFI_NTP
 #include <ESP8266WiFi.h>
-#elif defined ESP32_USE_NTP_TIME
+#elif defined TIME_USE_ESP32_WIFI_NTP
 #include <WiFi.h>
 #endif
 

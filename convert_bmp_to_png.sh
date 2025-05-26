@@ -14,12 +14,7 @@ echo "Searching for .bmp or .BMP files..."
 # Find all .bmp and .BMP files recursively
 find . -type f \( -name "*.bmp" -o -name "*.BMP" \) | while read -r bmp; do
     png="${bmp%.*}.png"
-
-    if [ -f "$png" ]; then
-        echo "Skipping existing: $png"
-        continue
-    fi
-
+    
     echo "Converting: $bmp -> $png"
 
     "$VENV_PYTHON" <<EOF
