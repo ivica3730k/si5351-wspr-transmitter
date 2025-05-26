@@ -52,7 +52,7 @@ class WSPRTxSyncNTP : public WSPRTxSync
         while (!WiFi.hostByName(this->ntp_server_fqdn, ip))
         {
 #ifdef DEBUG_NTP_TIME_OBTAINING
-            Serial.println("DNS lookup failed, retrying...");
+            Serial.println("WSPR NTP Tx Sync: DNS lookup failed, retrying...");
 #endif
             delay(100);
         }
@@ -71,21 +71,21 @@ class WSPRTxSyncNTP : public WSPRTxSync
             if (udp.begin(port))
             {
 #ifdef DEBUG_NTP_TIME_OBTAINING
-                Serial.print("UDP bound to port: ");
-                Serial.println(port);
+                Serial.println("WSPR NTP Tx Sync: UDP bound to port: ");
+                Serial.print(port);
 #endif
                 return port;
             }
         }
 
 #ifdef DEBUG_NTP_TIME_OBTAINING
-        Serial.println("Using fallback UDP port 2390");
+        Serial.println("WSPR NTP Tx Sync: Using fallback UDP port 2390");
 #endif
 
         while (!udp.begin(2390))
         {
 #ifdef DEBUG_NTP_TIME_OBTAINING
-            Serial.println("Fallback port bind failed, retrying...");
+            Serial.println("WSPR NTP Tx Sync: Fallback port bind failed, retrying...");
 #endif
             delay(100);
         }
@@ -122,7 +122,7 @@ class WSPRTxSyncNTP : public WSPRTxSync
             }
 
 #ifdef DEBUG_NTP_TIME_OBTAINING
-            Serial.println("No NTP response, retrying...");
+            Serial.println("WSPR NTP Tx Sync: No NTP response, retrying...");
 #endif
             delay(100);
         }
@@ -153,7 +153,7 @@ class WSPRTxSyncNTP : public WSPRTxSync
         uint32_t total_millis_to_next_tx = (seconds_to_wait * 1000UL) - millis;
 
 #ifdef DEBUG_NTP_TIME_OBTAINING
-        Serial.print("Current UTC time: ");
+        Serial.println("WSPR NTP Tx Sync: Current UTC time: ");
         Serial.print((epoch % 86400L) / 3600);
         Serial.print(':');
         if (minute < 10)
@@ -166,7 +166,7 @@ class WSPRTxSyncNTP : public WSPRTxSync
         Serial.print('.');
         Serial.println(millis);
 
-        Serial.print("Milliseconds to next TX period: ");
+        Serial.println("WSPR NTP Tx Sync: Milliseconds to next TX period: ");
         Serial.println(total_millis_to_next_tx);
 #endif
 

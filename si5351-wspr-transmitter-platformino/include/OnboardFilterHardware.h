@@ -6,24 +6,24 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-class FilterHardware
+class OnboardFilterHardware
 {
   public:
-    FilterHardware(uint8_t i2c_address)
+    OnboardFilterHardware(uint8_t i2c_address)
     {
-        #ifdef DEBUG_FILTER_HARDWARE
-        Serial.print("FilterHardware: Initializing with I2C address: ");
-        Serial.println(i2c_address, HEX);
-        #endif
         this->address = i2c_address;
     }
-    ~FilterHardware()
+    ~OnboardFilterHardware()
     {
         delete this->mcp;
     }
 
     void begin()
     {
+        #ifdef DEBUG_FILTER_HARDWARE
+        Serial.print("OnboardFilterHardware: Begining with I2C address: ");
+        Serial.println(this->address, HEX);
+        #endif
         this->mcp = new MCP23017(this->address);
         this->mcp->begin(this->address);
         this->mcp->init();
@@ -51,7 +51,7 @@ class FilterHardware
     {
         this->disable_all_filters();
         #ifdef DEBUG_FILTER_HARDWARE
-        Serial.println("FilterHardware: Enabling sub-megahertz dump.");
+        Serial.println("OnboardFilterHardware: Enabling sub-megahertz dump.");
         #endif
         this->mcp->digitalWrite(MCP23017Pin::GPA7, LOW);
         this->mcp->digitalWrite(MCP23017Pin::GPB7, LOW);
@@ -60,7 +60,7 @@ class FilterHardware
     void disable_sub_megahertz_dump()
     {
         #ifdef DEBUG_FILTER_HARDWARE
-        Serial.println("FilterHardware: Disabling sub-megahertz dump.");
+        Serial.println("OnboardFilterHardware: Disabling sub-megahertz dump.");
         #endif
         this->mcp->digitalWrite(MCP23017Pin::GPA7, HIGH);
         this->mcp->digitalWrite(MCP23017Pin::GPB7, HIGH);
@@ -69,7 +69,7 @@ class FilterHardware
     void disable_all_filters()
     {   
         #ifdef DEBUG_FILTER_HARDWARE
-        Serial.println("FilterHardware: Disabling all filters.");
+        Serial.println("OnboardFilterHardware: Disabling all filters.");
         #endif
         this->disable_sub_megahertz_dump();
         this->disable_20m_low_pass_filter();
@@ -81,7 +81,7 @@ class FilterHardware
     {
         this->disable_all_filters();
         #ifdef DEBUG_FILTER_HARDWARE
-        Serial.println("FilterHardware: Enabling 20m low pass filter.");
+        Serial.println("OnboardFilterHardware: Enabling 20m low pass filter.");
         #endif
         this->mcp->digitalWrite(MCP23017Pin::GPA0, HIGH);
         this->mcp->digitalWrite(MCP23017Pin::GPB0, HIGH);
@@ -92,7 +92,7 @@ class FilterHardware
     void disable_20m_low_pass_filter()
     {
         #ifdef DEBUG_FILTER_HARDWARE
-        Serial.println("FilterHardware: Disabling 20m low pass filter.");
+        Serial.println("OnboardFilterHardware: Disabling 20m low pass filter.");
         #endif
         this->mcp->digitalWrite(MCP23017Pin::GPA0, LOW);
         this->mcp->digitalWrite(MCP23017Pin::GPB0, LOW);
@@ -104,7 +104,7 @@ class FilterHardware
     {
         this->disable_all_filters();
         #ifdef DEBUG_FILTER_HARDWARE
-        Serial.println("FilterHardware: Enabling 10m low pass filter.");
+        Serial.println("OnboardFilterHardware: Enabling 10m low pass filter.");
         #endif
         this->mcp->digitalWrite(MCP23017Pin::GPA2, HIGH);
         this->mcp->digitalWrite(MCP23017Pin::GPB2, HIGH);
@@ -115,7 +115,7 @@ class FilterHardware
     void disable_10m_low_pass_filter()
     {
         #ifdef DEBUG_FILTER_HARDWARE
-        Serial.println("FilterHardware: Disabling 10m low pass filter.");
+        Serial.println("OnboardFilterHardware: Disabling 10m low pass filter.");
         #endif
         this->mcp->digitalWrite(MCP23017Pin::GPA2, LOW);
         this->mcp->digitalWrite(MCP23017Pin::GPB2, LOW);
@@ -127,7 +127,7 @@ class FilterHardware
     {
         this->disable_all_filters();
         #ifdef DEBUG_FILTER_HARDWARE
-        Serial.println("FilterHardware: Enabling 15m low pass filter.");
+        Serial.println("OnboardFilterHardware: Enabling 15m low pass filter.");
         #endif
         this->mcp->digitalWrite(MCP23017Pin::GPA4, HIGH);
         this->mcp->digitalWrite(MCP23017Pin::GPB4, HIGH);
@@ -138,7 +138,7 @@ class FilterHardware
     void disable_15m_low_pass_filter()
     {
         #ifdef DEBUG_FILTER_HARDWARE
-        Serial.println("FilterHardware: Disabling 15m low pass filter.");
+        Serial.println("OnboardFilterHardware: Disabling 15m low pass filter.");
         #endif
         this->mcp->digitalWrite(MCP23017Pin::GPA4, LOW);
         this->mcp->digitalWrite(MCP23017Pin::GPB4, LOW);
@@ -151,4 +151,4 @@ class FilterHardware
     MCP23017 *mcp;
 };
 
-#endif // FILTER_HARDWARE_H
+#endif // FILTER_HARDWRE_H

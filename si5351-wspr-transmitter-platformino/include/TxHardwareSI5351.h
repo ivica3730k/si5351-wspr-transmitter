@@ -14,7 +14,7 @@ class TxHardwareSi5351 : public TxHardware
         this->si5351 = new Si5351(i2c_address);
 
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.println("Initializing Si5351...");
+        Serial.println("SI5351 Tx Hardware: Initializing Si5351...");
 #endif
         this->si5351->init(SI5351_CRYSTAL_LOAD_8PF, 0, 0);
     }
@@ -27,7 +27,7 @@ class TxHardwareSi5351 : public TxHardware
     void transmit_wspr_message(const TxHardwareTxParameters &tx_params, uint8_t *message) override
     {
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.println("Enabling Si5351 clock output");
+        Serial.println("SI5351 Tx Hardware: Enabling Si5351 clock output");
 #endif
         this->si5351->output_enable(this->clock_output, true);
         this->configure_for_tx(tx_params);
@@ -58,7 +58,7 @@ class TxHardwareSi5351 : public TxHardware
         }
 
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.println("Disabling Si5351 clock output");
+        Serial.println("SI5351 Tx Hardware: Disabling Si5351 clock output");
 #endif
         this->disable_output();
     }
@@ -66,7 +66,7 @@ class TxHardwareSi5351 : public TxHardware
     void disable_output()
     {
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.println("Disabling Si5351 output");
+        Serial.println("SI5351 Tx Hardware: Disabling Si5351 output");
 #endif
         this->si5351->output_enable(this->clock_output, false);
     }
@@ -76,7 +76,7 @@ class TxHardwareSi5351 : public TxHardware
         this->configure_for_tx(tx_params);
 
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.println("Enabling Si5351 clock output for constant tone");
+        Serial.println("SI5351 Tx Hardware: Enabling Si5351 clock output for constant tone");
 #endif
         this->si5351->output_enable(this->clock_output, true);
 
@@ -102,7 +102,7 @@ class TxHardwareSi5351 : public TxHardware
     void configure_for_tx(const TxHardwareTxParameters &tx_params)
     {
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.println("Configuring Si5351 for transmission...");
+        Serial.println("SI5351 Tx Hardware: Configuring Si5351 for transmission...");
         Serial.print("Applying correction: ");
         Serial.println(tx_params.correction);
 #endif
