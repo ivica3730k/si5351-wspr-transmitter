@@ -7,7 +7,7 @@
 #include <Arduino.h>
 
 OnboardFilterHardware filter_hardware(0x20);
-#define AMP_ENABLE_PIN D5
+#define DRIVER_AMP_ENABLE_PIN D5
 
 #ifdef TIME_USE_ESP8266_WIFI_NTP
 #include <ESP8266WiFi.h>
@@ -40,21 +40,21 @@ const char *wspr_callsign = WSPR_CALLSIGN;
 const char *wspr_gridsquare = WSPR_GRIDSQUARE;
 int wspr_dbm = WSPR_DBM;
 
-void disable_amplifier()
+void disable_driver_amplifier()
 {
-    pinMode(AMP_ENABLE_PIN, OUTPUT);
-    digitalWrite(AMP_ENABLE_PIN, LOW);
+    pinMode(DRIVER_AMP_ENABLE_PIN, OUTPUT);
+    digitalWrite(DRIVER_AMP_ENABLE_PIN, LOW);
 }
 
-void enable_amplifier()
+void enable_driver_amplifier()
 {
-    pinMode(AMP_ENABLE_PIN, OUTPUT);
-    digitalWrite(AMP_ENABLE_PIN, HIGH);
+    pinMode(DRIVER_AMP_ENABLE_PIN, OUTPUT);
+    digitalWrite(DRIVER_AMP_ENABLE_PIN, HIGH);
 }
 
 void setup()
 {
-    disable_amplifier();
+    disable_driver_amplifier();
     filter_hardware.disable_all_filters();
     filter_hardware.disable_sub_megahertz_dump();
     Serial.begin(115200);
@@ -73,7 +73,7 @@ void setup()
 #endif
 
 #ifdef TEST_20M_LOW_PASS_FILTER_WITH_20M_SIGNAL
-    enable_amplifier();
+    enable_driver_amplifier();
     filter_hardware.enable_20m_low_pass_filter();
     filter_hardware.disable_sub_megahertz_dump();
     tx_hardware.output_constant_tone(tx_params_20m);
@@ -81,7 +81,7 @@ void setup()
 #endif
 
 #ifdef TEST_15M_LOW_PASS_FILTER_WITH_15M_SIGNAL
-    enable_amplifier();
+    enable_driver_amplifier();
     filter_hardware.enable_15m_low_pass_filter();
     filter_hardware.disable_sub_megahertz_dump();
     tx_hardware.output_constant_tone(tx_params_15m);
@@ -89,7 +89,7 @@ void setup()
 #endif
 
 #ifdef TEST_10M_LOW_PASS_FILTER_WITH_10M_SIGNAL
-    enable_amplifier();
+    enable_driver_amplifier();
     filter_hardware.enable_10m_low_pass_filter();
     filter_hardware.disable_sub_megahertz_dump();
     tx_hardware.output_constant_tone(tx_params_10m);
@@ -142,11 +142,11 @@ void transmit_wspr_message_on_20m()
     filter_hardware.disable_all_filters();
     filter_hardware.disable_sub_megahertz_dump();
     filter_hardware.enable_20m_low_pass_filter();
-    enable_amplifier();
+    enable_driver_amplifier();
     Serial.println("Transmitting WSPR message on 20m...");
     tx_hardware.transmit_wspr_message(tx_params_20m, wspr_message);
     Serial.println("WSPR message on 20m transmitted");
-    disable_amplifier();
+    disable_driver_amplifier();
     filter_hardware.disable_all_filters();
 }
 
@@ -155,11 +155,11 @@ void transmit_wspr_message_on_15m()
     filter_hardware.disable_all_filters();
     filter_hardware.disable_sub_megahertz_dump();
     filter_hardware.enable_15m_low_pass_filter();
-    enable_amplifier();
+    enable_driver_amplifier();
     Serial.println("Transmitting WSPR message on 15m...");
     tx_hardware.transmit_wspr_message(tx_params_15m, wspr_message);
     Serial.println("WSPR message on 15m transmitted");
-    disable_amplifier();
+    disable_driver_amplifier();
     filter_hardware.disable_all_filters();
 }
 
@@ -168,11 +168,11 @@ void transmit_wspr_message_on_10m()
     filter_hardware.disable_all_filters();
     filter_hardware.disable_sub_megahertz_dump();
     filter_hardware.enable_10m_low_pass_filter();
-    enable_amplifier();
+    enable_driver_amplifier();
     Serial.println("Transmitting WSPR message on 10m...");
     tx_hardware.transmit_wspr_message(tx_params_10m, wspr_message);
     Serial.println("WSPR message on 10m transmitted");
-    disable_amplifier();
+    disable_driver_amplifier();
     filter_hardware.disable_all_filters();
 }
 
