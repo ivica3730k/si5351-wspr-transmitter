@@ -1,3 +1,5 @@
+// rename this file to secrets.h and fill in the values below before compiling
+
 #ifndef SECRECTS_H
 #define SECRECTS_H
 
