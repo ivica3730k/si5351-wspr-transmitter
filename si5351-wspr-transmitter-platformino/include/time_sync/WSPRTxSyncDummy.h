@@ -1,7 +1,7 @@
 #ifndef WSPRTX_SYNC_DUMMY_H
 #define WSPRTX_SYNC_DUMMY_H
 
-#include "WSPRTxSync.h"
+#include "time_sync/WSPRTxSync.h"
 
 #include <Arduino.h>
 

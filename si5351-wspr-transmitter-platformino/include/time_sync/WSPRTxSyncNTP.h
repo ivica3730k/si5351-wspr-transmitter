@@ -1,18 +1,12 @@
-#ifndef WSPRTX_SYNC_ESP8266_NTP_H
-#define WSPRTX_SYNC_ESP8266_NTP_H
+#ifndef WSPRTX_SYNC_NTP_H
+#define WSPRTX_SYNC_NTP_H
 
 #define NTP_PACKET_SIZE 48
 
-#include "WSPRTxSync.h"
+#include "time_sync/WSPRTxSync.h"
 
 #include <Arduino.h>
 #include <WiFiUdp.h>
-
-#ifdef TIME_USE_ESP8266_WIFI_NTP
-#include <ESP8266WiFi.h>
-#elif defined TIME_USE_ESP32_WIFI_NTP
-#include <WiFi.h>
-#endif
 
 class WSPRTxSyncNTP : public WSPRTxSync
 {
@@ -174,4 +168,4 @@ class WSPRTxSyncNTP : public WSPRTxSync
     }
 };
 
-#endif // WSPRTX_SYNC_ESP8266_NTP_H
+#endif // WSPRTX_SYNC_NTP_H

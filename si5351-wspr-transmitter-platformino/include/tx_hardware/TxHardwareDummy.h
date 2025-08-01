@@ -10,7 +10,7 @@ class TxHardwareDummy : public TxHardware
     {
         this->tx_duration_millis = tx_duration_ms;
     }
-    void transmit_wspr_message(const TxHardwareTxParameters &tx_params, uint8_t *message) override
+    void transmit_wspr_message(const TxParameters &tx_params, uint8_t *message) override
     {
 #ifdef DEBUG_TX_HARDWARE_USE_DUMMY
         Serial.print("Dummy TxHardware: Simulating transmission for ");

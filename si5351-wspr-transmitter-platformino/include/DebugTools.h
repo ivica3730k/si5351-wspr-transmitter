@@ -64,4 +64,3 @@ void block_forever()
 }
 
 #endif // DEBUG_TOOLS_H
-

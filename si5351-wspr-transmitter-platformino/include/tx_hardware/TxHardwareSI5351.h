@@ -3,8 +3,8 @@
 
 #define TONE_SPACING 146 // ~1.46 Hz
 
-#include "TxHardware.h"
 #include "si5351.h"
+#include "tx_hardware/TxHardware.h"
 
 class TxHardwareSi5351 : public TxHardware
 {
@@ -24,7 +24,7 @@ class TxHardwareSi5351 : public TxHardware
         delete this->si5351;
     }
 
-    void transmit_wspr_message(const TxHardwareTxParameters &tx_params, uint8_t *message) override
+    void transmit_wspr_message(const TxParameters &tx_params, uint8_t *message) override
     {
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
         Serial.println("SI5351 Tx Hardware: Enabling Si5351 clock output");
@@ -71,7 +71,7 @@ class TxHardwareSi5351 : public TxHardware
         this->si5351->output_enable(this->clock_output, false);
     }
 
-    void output_constant_tone(const TxHardwareTxParameters &tx_params)
+    void output_constant_tone(const TxParameters &tx_params)
     {
         this->configure_for_tx(tx_params);
 
@@ -99,7 +99,7 @@ class TxHardwareSi5351 : public TxHardware
     Si5351 *si5351;
     si5351_clock clock_output = SI5351_CLK0;
 
-    void configure_for_tx(const TxHardwareTxParameters &tx_params)
+    void configure_for_tx(const TxParameters &tx_params)
     {
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
         Serial.println("SI5351 Tx Hardware: Configuring Si5351 for transmission...");
@@ -125,15 +125,15 @@ class TxHardwareSi5351 : public TxHardware
         return (base_frequency_hz * 100) + (symbol_index * TONE_SPACING);
     }
 
-    si5351_drive get_drive_power_from_enum(TxHardwareTxParameters::DriveStrength strength)
+    si5351_drive get_drive_power_from_enum(TxParameters::DriveStrength strength)
     {
         switch (strength)
         {
-        case TxHardwareTxParameters::DriveStrength::LOW_POWER:
+        case TxParameters::DriveStrength::LOW_POWER:
             return SI5351_DRIVE_2MA;
-        case TxHardwareTxParameters::DriveStrength::MEDIUM_POWER:
+        case TxParameters::DriveStrength::MEDIUM_POWER:
             return SI5351_DRIVE_4MA;
-        case TxHardwareTxParameters::DriveStrength::HIGH_POWER:
+        case TxParameters::DriveStrength::HIGH_POWER:
             return SI5351_DRIVE_8MA;
         }
         return SI5351_DRIVE_2MA;
