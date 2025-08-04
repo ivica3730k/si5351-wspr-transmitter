@@ -1,5 +1,4 @@
 #include "DebugTools.h"
-#include "JTEncode.h"
 #include "OnboardFilterHardware.h"
 #include "TxController.h"
 #include "secrets.h"
@@ -115,12 +114,9 @@ void setup()
     wifi_manager.autoConnect();
 
 #endif // TIME_USE_ESP_WIFI
-    JTEncode encoder;
-    encoder.wspr_encode(wspr_callsign, wspr_gridsquare, wspr_dbm, wspr_message);
 
     tx_parameters_controller.set_20m_tx_correction(-91200);
-    tx_controller.begin(&tx_hardware, &filter_hardware, &tx_sync, &tx_parameters_controller,
-                        wspr_message);
+    tx_controller.begin(&tx_hardware, &filter_hardware, &tx_sync, &tx_parameters_controller);
     tx_controller.attach_pre_tx_function(
         []()
         {
