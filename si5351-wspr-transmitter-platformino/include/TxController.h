@@ -13,13 +13,16 @@ class TxController
     ~TxController(){};
 
     void begin(TxHardware *tx_hardware, OnboardFilterHardware *filter_hardware, WSPRTxSync *tx_sync,
-               TxParametersController *tx_parameters_controller, uint8_t *wspr_message)
+               TxParametersController *tx_parameters_controller)
     {
         this->tx_hardware = tx_hardware;
         this->filter_hardware = filter_hardware;
         this->tx_sync = tx_sync;
         this->tx_parameters_controller = tx_parameters_controller;
-        this->wspr_message = wspr_message;
+        JTEncode encoder;
+        encoder.wspr_encode(tx_parameters_controller->get_callsign().c_str(),
+                            tx_parameters_controller->get_locator().c_str(),
+                            tx_parameters_controller->get_tx_power(), this->wspr_message);
     }
 
     void attach_pre_tx_function(void (*pre_tx_function)())
@@ -61,7 +64,7 @@ class TxController
     OnboardFilterHardware *filter_hardware;
     WSPRTxSync *tx_sync;
     TxParametersController *tx_parameters_controller;
-    uint8_t *wspr_message;
+    uint8_t wspr_message[WSPR_SYMBOL_COUNT];
 
     void (*pre_tx_function)() = nullptr;
     void (*post_tx_function)() = nullptr;
@@ -75,12 +78,12 @@ class TxController
         {
             this->pre_tx_function();
         }
-        
+
         (filter_object->*filter_enable_function)();
         Serial.print("Transmitting WSPR message on ");
         Serial.print(tx_params.frequency / 1000000);
         Serial.println(" MHz...");
-        this->tx_hardware->transmit_wspr_message(tx_params, wspr_message);
+        this->tx_hardware->transmit_wspr_message(tx_params, this->wspr_message);
         Serial.println("WSPR message transmitted");
 
         if (this->post_tx_function)
