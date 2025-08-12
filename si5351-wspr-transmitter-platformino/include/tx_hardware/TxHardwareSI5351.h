@@ -122,7 +122,7 @@ class TxHardwareSi5351 : public TxHardware
 
     uint64_t calculate_tone_freq_mhz(uint64_t base_frequency_hz, uint8_t symbol_index)
     {
-        return (base_frequency_hz * 100) + (symbol_index * TONE_SPACING);
+        return ((base_frequency_hz + 1500UL) * 100) + (symbol_index * TONE_SPACING);
     }
 
     si5351_drive get_drive_power_from_enum(TxParameters::DriveStrength strength)

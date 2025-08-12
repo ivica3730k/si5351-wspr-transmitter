@@ -4,7 +4,6 @@
 #include "OnboardFilterHardware.h"
 #include "time_sync/WSPRTxSync.h"
 #include "tx_hardware/TxHardware.h"
-#include "tx_parameters_controller/TxParametersController.h"
 
 class TxController
 {
