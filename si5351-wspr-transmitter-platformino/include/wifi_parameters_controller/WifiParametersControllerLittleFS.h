@@ -17,12 +17,13 @@ class WiFiParametersControllerLittleFS : public WiFiParametersController
         if (!LittleFS.begin())
         {
 #ifdef DEBUG_WIFI_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.println("Failed to mount LittleFS");
+            Serial.println("WiFiParametersControllerLittleFS: Failed to mount LittleFS");
 #endif
             return;
         }
 #ifdef DEBUG_WIFI_PARAMETERS_CONTROLLER_LITTLE_FS
-        Serial.println("WiFiParametersController initialized with LittleFS");
+        Serial.println(
+            "WiFiParametersControllerLittleFS: WiFiParametersController initialized with LittleFS");
 #endif
     }
 
@@ -41,7 +42,8 @@ class WiFiParametersControllerLittleFS : public WiFiParametersController
         if (ssid == this->get_ssid())
         {
 #ifdef DEBUG_WIFI_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.println("SSID is unchanged, not writing to file.");
+            Serial.println(
+                "WiFiParametersControllerLittleFS: SSID is unchanged, not writing to file.");
 #endif
             return;
         }
@@ -53,7 +55,8 @@ class WiFiParametersControllerLittleFS : public WiFiParametersController
         if (password == this->get_password())
         {
 #ifdef DEBUG_WIFI_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.println("Password is unchanged, not writing to file.");
+            Serial.println(
+                "WiFiParametersControllerLittleFS: Password is unchanged, not writing to file.");
 #endif
             return;
         }
@@ -69,7 +72,7 @@ class WiFiParametersControllerLittleFS : public WiFiParametersController
             file.print(val);
             file.close();
 #ifdef DEBUG_WIFI_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.print("Successfully wrote string to ");
+            Serial.print("WiFiParametersControllerLittleFS: Successfully wrote string to ");
             Serial.print(path);
             Serial.print(": ");
             Serial.println(val);
@@ -78,7 +81,7 @@ class WiFiParametersControllerLittleFS : public WiFiParametersController
         else
         {
 #ifdef DEBUG_WIFI_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.print("Failed to open ");
+            Serial.print("WiFiParametersControllerLittleFS: Failed to open file ");
             Serial.print(path);
             Serial.println(" for writing");
 #endif
@@ -93,7 +96,7 @@ class WiFiParametersControllerLittleFS : public WiFiParametersController
             file.close();
             value.trim();
 #ifdef DEBUG_WIFI_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.print("Read string from ");
+            Serial.print("WiFiParametersControllerLittleFS: Read string from file ");
             Serial.print(path);
             Serial.print(": ");
             Serial.println(value);
@@ -101,7 +104,7 @@ class WiFiParametersControllerLittleFS : public WiFiParametersController
             return value;
         }
 #ifdef DEBUG_WIFI_PARAMETERS_CONTROLLER_LITTLE_FS
-        Serial.print("Failed to open ");
+        Serial.print("WiFiParametersControllerLittleFS: Failed to open file ");
         Serial.print(path);
         Serial.println(", using default string");
 #endif
