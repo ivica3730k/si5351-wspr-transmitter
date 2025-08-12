@@ -38,12 +38,12 @@ class TxParametersControllerLittleFs : public TxParametersController
         if (!LittleFS.begin())
         {
 #ifdef DEBUG_TX_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.println("Failed to mount LittleFS");
+            Serial.println("TxParametersControllerLittleFs: Failed to mount LittleFS");
 #endif
             return;
         }
 #ifdef DEBUG_TX_PARAMETERS_CONTROLLER_LITTLE_FS
-        Serial.println("TxParametersController initialized with LittleFS");
+        Serial.println("TxParametersControllerLittleFs: TxParametersController initialized with LittleFS");
 #endif
     }
 
@@ -214,7 +214,7 @@ class TxParametersControllerLittleFs : public TxParametersController
             file.print(value);
             file.close();
 #ifdef DEBUG_TX_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.print("Successfully wrote to ");
+            Serial.print("TxParametersControllerLittleFs: Successfully wrote to ");
             Serial.print(path);
             Serial.print(": ");
             Serial.println(value);
@@ -223,7 +223,7 @@ class TxParametersControllerLittleFs : public TxParametersController
         else
         {
 #ifdef DEBUG_TX_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.print("Failed to open ");
+            Serial.print("TxParametersControllerLittleFs: Failed to open ");
             Serial.print(path);
             Serial.println(" for writing");
 #endif
@@ -238,7 +238,7 @@ class TxParametersControllerLittleFs : public TxParametersController
             file.print(val);
             file.close();
 #ifdef DEBUG_TX_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.print("Successfully wrote string to ");
+            Serial.print("TxParametersControllerLittleFs: Successfully wrote string to ");
             Serial.print(path);
             Serial.print(": ");
             Serial.println(val);
@@ -247,7 +247,7 @@ class TxParametersControllerLittleFs : public TxParametersController
         else
         {
 #ifdef DEBUG_TX_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.print("Failed to open ");
+            Serial.print("TxParametersControllerLittleFs: Failed to open ");
             Serial.print(path);
             Serial.println(" for writing");
 #endif
@@ -262,7 +262,7 @@ class TxParametersControllerLittleFs : public TxParametersController
             int val = file.parseInt();
             file.close();
 #ifdef DEBUG_TX_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.print("Read int from ");
+            Serial.print("TxParametersControllerLittleFs: Read int from ");
             Serial.print(path);
             Serial.print(": ");
             Serial.println(val);
@@ -270,7 +270,7 @@ class TxParametersControllerLittleFs : public TxParametersController
             return val;
         }
 #ifdef DEBUG_TX_PARAMETERS_CONTROLLER_LITTLE_FS
-        Serial.print("Failed to open ");
+        Serial.print("TxParametersControllerLittleFs: Failed to open ");
         Serial.print(path);
         Serial.println(", using default int");
 #endif
@@ -287,7 +287,7 @@ class TxParametersControllerLittleFs : public TxParametersController
             valStr.trim();
             uint64_t val = parse_uint64(valStr);
 #ifdef DEBUG_TX_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.print("Read uint64 from ");
+            Serial.print("TxParametersControllerLittleFs: Read uint64 from ");
             Serial.print(path);
             Serial.print(": ");
             Serial.println((unsigned long)val);
@@ -295,7 +295,7 @@ class TxParametersControllerLittleFs : public TxParametersController
             return val;
         }
 #ifdef DEBUG_TX_PARAMETERS_CONTROLLER_LITTLE_FS
-        Serial.print("Failed to open ");
+        Serial.print("TxParametersControllerLittleFs: Failed to open ");
         Serial.print(path);
         Serial.println(", using default uint64");
 #endif
@@ -324,7 +324,7 @@ class TxParametersControllerLittleFs : public TxParametersController
             file.close();
             value.trim();
 #ifdef DEBUG_TX_PARAMETERS_CONTROLLER_LITTLE_FS
-            Serial.print("Read string from ");
+            Serial.print("TxParametersControllerLittleFs: Read string from ");
             Serial.print(path);
             Serial.print(": ");
             Serial.println(value);
@@ -332,7 +332,7 @@ class TxParametersControllerLittleFs : public TxParametersController
             return value;
         }
 #ifdef DEBUG_TX_PARAMETERS_CONTROLLER_LITTLE_FS
-        Serial.print("Failed to open ");
+        Serial.print("TxParametersControllerLittleFs: Failed to open ");
         Serial.print(path);
         Serial.println(", using default string");
 #endif
