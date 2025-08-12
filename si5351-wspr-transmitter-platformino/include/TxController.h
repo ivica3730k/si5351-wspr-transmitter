@@ -36,7 +36,7 @@ class TxController
 
     void transmit_wspr_message_on_20m()
     {
-        Serial.println("Will transmit WSPR message on 20m band next");
+        Serial.println("TxController: Will transmit WSPR message on 20m band next");
         this->transmit_wspr_message(&OnboardFilterHardware::enable_20m_low_pass_filter,
                                     this->filter_hardware,
                                     this->tx_parameters_controller->get_tx_params_20m());
@@ -44,7 +44,7 @@ class TxController
 
     void transmit_wspr_message_on_15m()
     {
-        Serial.println("Will transmit WSPR message on 15m band next");
+        Serial.println("TxController: Will transmit WSPR message on 15m band next");
         this->transmit_wspr_message(&OnboardFilterHardware::enable_15m_low_pass_filter,
                                     this->filter_hardware,
                                     this->tx_parameters_controller->get_tx_params_15m());
@@ -52,7 +52,7 @@ class TxController
 
     void transmit_wspr_message_on_10m()
     {
-        Serial.println("Will transmit WSPR message on 10m band next");
+        Serial.println("TxController: Will transmit WSPR message on 10m band next");
         this->transmit_wspr_message(&OnboardFilterHardware::enable_10m_low_pass_filter,
                                     this->filter_hardware,
                                     this->tx_parameters_controller->get_tx_params_10m());
@@ -79,11 +79,11 @@ class TxController
         }
 
         (filter_object->*filter_enable_function)();
-        Serial.print("Transmitting WSPR message on ");
+        Serial.print("TxController: Transmitting WSPR message on ");
         Serial.print(tx_params.frequency / 1000000);
         Serial.println(" MHz...");
         this->tx_hardware->transmit_wspr_message(tx_params, this->wspr_message);
-        Serial.println("WSPR message transmitted");
+        Serial.println("TxController: WSPR message transmitted");
 
         if (this->post_tx_function)
         {

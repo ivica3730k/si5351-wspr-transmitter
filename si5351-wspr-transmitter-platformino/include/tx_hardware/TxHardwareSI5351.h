@@ -14,7 +14,7 @@ class TxHardwareSi5351 : public TxHardware
         this->si5351 = new Si5351(i2c_address);
 
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.println("SI5351 Tx Hardware: Initializing Si5351...");
+        Serial.println("TxHardwareSi5351: Initializing Si5351...");
 #endif
         this->si5351->init(SI5351_CRYSTAL_LOAD_8PF, 0, 0);
     }
@@ -27,7 +27,7 @@ class TxHardwareSi5351 : public TxHardware
     void transmit_wspr_message(const TxParameters &tx_params, uint8_t *message) override
     {
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.println("SI5351 Tx Hardware: Enabling Si5351 clock output");
+        Serial.println("TxHardwareSi5351: Enabling Si5351 clock output");
 #endif
         this->si5351->output_enable(this->clock_output, true);
         this->configure_for_tx(tx_params);
@@ -40,9 +40,9 @@ class TxHardwareSi5351 : public TxHardware
             uint64_t tone_mhz = this->calculate_tone_freq_mhz(tx_params.frequency, message[i]);
 
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-            Serial.print("Setting tone [");
+            Serial.print("TxHardwareSi5351: Setting tone [");
             Serial.print(i);
-            Serial.print("] to frequency (millihertz): ");
+            Serial.print("] to frequency (1/100hz): ");
             Serial.println(tone_mhz);
 #endif
 
@@ -58,7 +58,7 @@ class TxHardwareSi5351 : public TxHardware
         }
 
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.println("SI5351 Tx Hardware: Disabling Si5351 clock output");
+        Serial.println("TxHardwareSi5351: Disabling Si5351 clock output");
 #endif
         this->disable_output();
     }
@@ -66,7 +66,7 @@ class TxHardwareSi5351 : public TxHardware
     void disable_output()
     {
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.println("SI5351 Tx Hardware: Disabling Si5351 output");
+        Serial.println("TxHardwareSi5351: Disabling Si5351 output");
 #endif
         this->si5351->output_enable(this->clock_output, false);
     }
@@ -76,21 +76,21 @@ class TxHardwareSi5351 : public TxHardware
         this->configure_for_tx(tx_params);
 
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.println("SI5351 Tx Hardware: Enabling Si5351 clock output for constant tone");
+        Serial.println("TxHardwareSi5351: Enabling Si5351 clock output for constant tone");
 #endif
         this->si5351->output_enable(this->clock_output, true);
 
         uint64_t tone_mhz = tx_params.frequency * 100;
 
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.print("Setting constant tone frequency (millihertz): ");
+        Serial.print("TxHardwareSi5351: Setting constant tone frequency (millihertz): ");
         Serial.println(tone_mhz);
 #endif
 
         uint8_t output_code = this->si5351->set_freq(tone_mhz, this->clock_output);
 
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.print("Si5351 output code: ");
+        Serial.print("TxHardwareSi5351: Si5351 output code: ");
         Serial.println(output_code);
 #endif
     }
@@ -102,8 +102,8 @@ class TxHardwareSi5351 : public TxHardware
     void configure_for_tx(const TxParameters &tx_params)
     {
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.println("SI5351 Tx Hardware: Configuring Si5351 for transmission...");
-        Serial.print("Applying correction: ");
+        Serial.println("TxHardwareSi5351: Configuring Si5351 for transmission...");
+        Serial.print("TxHardwareSi5351: Applying correction: ");
         Serial.println(tx_params.correction);
 #endif
 
@@ -113,7 +113,7 @@ class TxHardwareSi5351 : public TxHardware
         si5351_drive drive = this->get_drive_power_from_enum(tx_params.drive_strength);
 
 #ifdef DEBUG_TX_HARDWARE_USE_SI5351
-        Serial.print("Setting drive strength: ");
+        Serial.print("TxHardwareSi5351: Setting drive strength: ");
         Serial.println(drive);
 #endif
 

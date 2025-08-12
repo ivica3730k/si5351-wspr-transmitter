@@ -65,8 +65,8 @@ class WSPRTxSyncNTP : public WSPRTxSync
             if (udp.begin(port))
             {
 #ifdef DEBUG_NTP_TIME_OBTAINING
-                Serial.println("WSPR NTP Tx Sync: UDP bound to port: ");
-                Serial.print(port);
+                Serial.print("WSPR NTP Tx Sync: UDP bound to port: ");
+                Serial.println(port);
 #endif
                 return port;
             }
@@ -90,11 +90,11 @@ class WSPRTxSyncNTP : public WSPRTxSync
     static void prepare_ntp_request(byte *buffer)
     {
         memset(buffer, 0, NTP_PACKET_SIZE);
-        buffer[0] = 0b11100011;
-        buffer[1] = 0;
-        buffer[2] = 6;
-        buffer[3] = 0xEC;
-        buffer[12] = 49;
+        buffer[0]  = 0b11100011; // LI, Version, Mode
+        buffer[1]  = 0;          // Stratum
+        buffer[2]  = 6;          // Polling Interval
+        buffer[3]  = 0xEC;       // Precision
+        buffer[12] = 49;         // Reference ID "1N14"
         buffer[13] = 0x4E;
         buffer[14] = 49;
         buffer[15] = 52;
@@ -125,11 +125,11 @@ class WSPRTxSyncNTP : public WSPRTxSync
     static uint32_t calculate_milliseconds_to_next_tx(const byte *buffer)
     {
         unsigned long high_word = word(buffer[40], buffer[41]);
-        unsigned long low_word = word(buffer[42], buffer[43]);
+        unsigned long low_word  = word(buffer[42], buffer[43]);
         unsigned long secs_since_1900 = (high_word << 16) | low_word;
 
         unsigned long high_frac = word(buffer[44], buffer[45]);
-        unsigned long low_frac = word(buffer[46], buffer[47]);
+        unsigned long low_frac  = word(buffer[46], buffer[47]);
         unsigned long frac = (high_frac << 16) | low_frac;
 
         const unsigned long seventy_years = 2208988800UL;
@@ -138,7 +138,7 @@ class WSPRTxSyncNTP : public WSPRTxSync
         int minute = (epoch % 3600) / 60;
         int second = epoch % 60;
 
-        double fraction = frac / 4294967296.0;
+        double fraction = frac / 4294967296.0; // 2^32
         uint32_t millis = static_cast<uint32_t>(fraction * 1000);
 
         int minutes_to_wait = ((minute + 1) % 2);
@@ -147,20 +147,20 @@ class WSPRTxSyncNTP : public WSPRTxSync
         uint32_t total_millis_to_next_tx = (seconds_to_wait * 1000UL) - millis;
 
 #ifdef DEBUG_NTP_TIME_OBTAINING
-        Serial.println("WSPR NTP Tx Sync: Current UTC time: ");
+        // Current time on one line
+        Serial.print("WSPR NTP Tx Sync: Current UTC time: ");
         Serial.print((epoch % 86400L) / 3600);
         Serial.print(':');
-        if (minute < 10)
-            Serial.print('0');
+        if (minute < 10) Serial.print('0');
         Serial.print(minute);
         Serial.print(':');
-        if (second < 10)
-            Serial.print('0');
+        if (second < 10) Serial.print('0');
         Serial.print(second);
         Serial.print('.');
         Serial.println(millis);
 
-        Serial.println("WSPR NTP Tx Sync: Milliseconds to next TX period: ");
+        // Milliseconds to next TX on one line
+        Serial.print("WSPR NTP Tx Sync: Milliseconds to next TX period: ");
         Serial.println(total_millis_to_next_tx);
 #endif
 
