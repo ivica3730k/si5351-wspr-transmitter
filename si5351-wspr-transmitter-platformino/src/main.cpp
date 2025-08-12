@@ -13,12 +13,12 @@
 
 #include "OnboardFilterHardware.h"
 #include "TxController.h"
-#include "secrets.h"
 #include "time_sync/WSPRTxSyncDummy.h"
 #include "time_sync/WSPRTxSyncNTP.h"
 #include "tx_hardware/TxHardwareDummy.h"
 #include "tx_hardware/TxHardwareSI5351.h"
 #include "tx_parameters_controller/TxParametersControllerLittleFS.h"
+#include "wifi_parameters_controller/WifiParametersControllerLittleFS.h"
 
 #define CONFIGURATION_PIN D6
 #define DRIVER_AMP_ENABLE_PIN D5
@@ -26,8 +26,6 @@
 OnboardFilterHardware filter_hardware(0x20);
 
 #if defined(TIME_USE_ESP_WIFI)
-static const char *wifi_ssid = WIFI_SSID;
-static const char *wifi_password = WIFI_PASSWORD;
 WSPRTxSyncNTP tx_sync("uk.pool.ntp.org");
 #elif defined(TIME_USE_DUMMY)
 WSPRTxSyncDummy tx_sync(1);
@@ -44,6 +42,7 @@ TxHardwareDummy tx_hardware(10000);
 #endif
 
 TxParametersControllerLittleFs tx_parameters_controller;
+WiFiParametersControllerLittleFS wifi_parameters_controller;
 TxController tx_controller;
 
 static inline void disable_driver_amplifier()
@@ -125,11 +124,14 @@ void setup()
     }
 
 #if defined(TIME_USE_ESP_WIFI)
+    wifi_parameters_controller.begin();
+    wifi_parameters_controller.set_ssid("VM8667336");
+    wifi_parameters_controller.set_password("tqZtgcnn8xvq");
     Serial.println("Connecting to WiFi...");
 #if defined(ESP8266) || defined(BOARD_FAMILY_ESP8266)
     WiFi.mode(WIFI_STA);
 #endif
-    WiFi.begin(wifi_ssid, wifi_password);
+    WiFi.begin(wifi_parameters_controller.get_ssid(), wifi_parameters_controller.get_password());
 
     while (WiFi.status() != WL_CONNECTED)
     {
