@@ -43,16 +43,25 @@ class TxParametersController
     virtual void set_20m_tx_frequency(uint64_t frequency) = 0;
     virtual void set_20m_tx_correction(int32_t correction) = 0;
     virtual void set_20m_tx_drive_strength(TxParameters::DriveStrength strength) = 0;
+    virtual void enable_20m_tx() = 0;
+    virtual void disable_20m_tx() = 0;
+    virtual bool is_20m_tx_enabled() = 0;
 
     virtual TxParameters get_tx_params_15m() = 0;
     virtual void set_15m_tx_frequency(uint64_t frequency) = 0;
     virtual void set_15m_tx_correction(int32_t correction) = 0;
     virtual void set_15m_tx_drive_strength(TxParameters::DriveStrength strength) = 0;
+    virtual void enable_15m_tx() = 0;
+    virtual void disable_15m_tx() = 0;
+    virtual bool is_15m_tx_enabled() = 0;
 
     virtual TxParameters get_tx_params_10m() = 0;
     virtual void set_10m_tx_frequency(uint64_t frequency) = 0;
     virtual void set_10m_tx_correction(int32_t correction) = 0;
     virtual void set_10m_tx_drive_strength(TxParameters::DriveStrength strength) = 0;
+    virtual void enable_10m_tx() = 0;
+    virtual void disable_10m_tx() = 0;
+    virtual bool is_10m_tx_enabled() = 0;
 };
 
 #endif // TXPARAMETERSCONTROLLER_H
