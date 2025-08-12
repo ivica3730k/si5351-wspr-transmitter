@@ -13,7 +13,6 @@
 
 #include "OnboardFilterHardware.h"
 #include "TxController.h"
-#include "configurator/SerialConfigurator.h"
 #include "secrets.h"
 #include "time_sync/WSPRTxSyncDummy.h"
 #include "time_sync/WSPRTxSyncNTP.h"
@@ -118,9 +117,6 @@ void setup()
             if (millis() - start_time > 2000)
             {
                 Serial.println("Entering configuration mode...");
-                SerialConfigurator configurator;
-                configurator.begin(tx_hardware, tx_parameters_controller);
-                configurator.set_20m_tx_frequency();
                 Serial.println("Configuration mode finished.");
                 break;
             }
