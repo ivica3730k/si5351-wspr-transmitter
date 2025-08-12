@@ -18,6 +18,7 @@
 #include "tx_hardware/TxHardwareDummy.h"
 #include "tx_hardware/TxHardwareSI5351.h"
 #include "tx_parameters_controller/TxParametersControllerLittleFS.h"
+#include "wifi_parameters_configurator/WiFiParametersConfiguratorSerial.h"
 #include "wifi_parameters_controller/WifiParametersControllerLittleFS.h"
 
 #define CONFIGURATION_PIN D6
@@ -42,7 +43,9 @@ TxHardwareDummy tx_hardware(10000);
 #endif
 
 TxParametersControllerLittleFs tx_parameters_controller;
+WiFiParametersConfiguratorSerial wifi_parameters_configurator;
 WiFiParametersControllerLittleFS wifi_parameters_controller;
+
 TxController tx_controller;
 
 static inline void disable_driver_amplifier()
@@ -76,15 +79,33 @@ void setup()
 {
     Serial.begin(115200);
     pinMode(CONFIGURATION_PIN, INPUT_PULLUP);
-    delay(5000);
-
-    Serial.print("Read of configuration pin: ");
-    Serial.println(digitalRead(CONFIGURATION_PIN));
-
+    delay(2000); // Allow time for serial monitor to connect
     Wire.begin();
 
     filter_hardware.begin();
     tx_parameters_controller.begin();
+
+#if defined(TIME_USE_ESP_WIFI)
+    wifi_parameters_controller.begin();
+#endif
+
+    if (digitalRead(CONFIGURATION_PIN) == LOW)
+    {
+        uint32_t start_time = millis();
+        while (digitalRead(CONFIGURATION_PIN) == LOW)
+        {
+            if (millis() - start_time > 2000)
+            {
+                Serial.println("Entering configuration mode...");
+                wifi_parameters_configurator.begin(wifi_parameters_controller);
+                wifi_parameters_configurator.set_ssid();
+                wifi_parameters_configurator.set_password();
+                Serial.println("Configuration mode finished.");
+                break;
+            }
+            yield();
+        }
+    }
 
     Serial.println("Keeping warm");
     keep_warm();
@@ -108,25 +129,7 @@ void setup()
             Serial.println("Post-transmission function: Driver amplifier disabled.");
         });
 
-    if (digitalRead(CONFIGURATION_PIN) == LOW)
-    {
-        uint32_t start_time = millis();
-        while (digitalRead(CONFIGURATION_PIN) == LOW)
-        {
-            if (millis() - start_time > 2000)
-            {
-                Serial.println("Entering configuration mode...");
-                Serial.println("Configuration mode finished.");
-                break;
-            }
-            yield();
-        }
-    }
-
 #if defined(TIME_USE_ESP_WIFI)
-    wifi_parameters_controller.begin();
-    wifi_parameters_controller.set_ssid("VM8667336");
-    wifi_parameters_controller.set_password("tqZtgcnn8xvq");
     Serial.println("Connecting to WiFi...");
 #if defined(ESP8266) || defined(BOARD_FAMILY_ESP8266)
     WiFi.mode(WIFI_STA);
