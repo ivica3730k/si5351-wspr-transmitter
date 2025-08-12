@@ -13,12 +13,13 @@
 
 #include "OnboardFilterHardware.h"
 #include "TxController.h"
-#include "secrets.h"
 #include "time_sync/WSPRTxSyncDummy.h"
 #include "time_sync/WSPRTxSyncNTP.h"
 #include "tx_hardware/TxHardwareDummy.h"
 #include "tx_hardware/TxHardwareSI5351.h"
 #include "tx_parameters_controller/TxParametersControllerLittleFS.h"
+#include "wifi_parameters_configurator/WiFiParametersConfiguratorSerial.h"
+#include "wifi_parameters_controller/WifiParametersControllerLittleFS.h"
 
 #define CONFIGURATION_PIN D6
 #define DRIVER_AMP_ENABLE_PIN D5
@@ -26,8 +27,6 @@
 OnboardFilterHardware filter_hardware(0x20);
 
 #if defined(TIME_USE_ESP_WIFI)
-static const char *wifi_ssid = WIFI_SSID;
-static const char *wifi_password = WIFI_PASSWORD;
 WSPRTxSyncNTP tx_sync("uk.pool.ntp.org");
 #elif defined(TIME_USE_DUMMY)
 WSPRTxSyncDummy tx_sync(1);
@@ -44,6 +43,9 @@ TxHardwareDummy tx_hardware(10000);
 #endif
 
 TxParametersControllerLittleFs tx_parameters_controller;
+WiFiParametersConfiguratorSerial wifi_parameters_configurator;
+WiFiParametersControllerLittleFS wifi_parameters_controller;
+
 TxController tx_controller;
 
 static inline void disable_driver_amplifier()
@@ -77,15 +79,33 @@ void setup()
 {
     Serial.begin(115200);
     pinMode(CONFIGURATION_PIN, INPUT_PULLUP);
-    delay(5000);
-
-    Serial.print("Read of configuration pin: ");
-    Serial.println(digitalRead(CONFIGURATION_PIN));
-
+    delay(2000); // Allow time for serial monitor to connect
     Wire.begin();
 
     filter_hardware.begin();
     tx_parameters_controller.begin();
+
+#if defined(TIME_USE_ESP_WIFI)
+    wifi_parameters_controller.begin();
+#endif
+
+    if (digitalRead(CONFIGURATION_PIN) == LOW)
+    {
+        uint32_t start_time = millis();
+        while (digitalRead(CONFIGURATION_PIN) == LOW)
+        {
+            if (millis() - start_time > 2000)
+            {
+                Serial.println("Entering configuration mode...");
+                wifi_parameters_configurator.begin(wifi_parameters_controller);
+                wifi_parameters_configurator.set_ssid();
+                wifi_parameters_configurator.set_password();
+                Serial.println("Configuration mode finished.");
+                break;
+            }
+            yield();
+        }
+    }
 
     Serial.println("Keeping warm");
     keep_warm();
@@ -109,27 +129,12 @@ void setup()
             Serial.println("Post-transmission function: Driver amplifier disabled.");
         });
 
-    if (digitalRead(CONFIGURATION_PIN) == LOW)
-    {
-        uint32_t start_time = millis();
-        while (digitalRead(CONFIGURATION_PIN) == LOW)
-        {
-            if (millis() - start_time > 2000)
-            {
-                Serial.println("Entering configuration mode...");
-                Serial.println("Configuration mode finished.");
-                break;
-            }
-            yield();
-        }
-    }
-
 #if defined(TIME_USE_ESP_WIFI)
     Serial.println("Connecting to WiFi...");
 #if defined(ESP8266) || defined(BOARD_FAMILY_ESP8266)
     WiFi.mode(WIFI_STA);
 #endif
-    WiFi.begin(wifi_ssid, wifi_password);
+    WiFi.begin(wifi_parameters_controller.get_ssid(), wifi_parameters_controller.get_password());
 
     while (WiFi.status() != WL_CONNECTED)
     {
