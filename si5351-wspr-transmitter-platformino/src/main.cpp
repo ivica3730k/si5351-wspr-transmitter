@@ -2,9 +2,9 @@
 #include <Wire.h>
 
 #if defined(TIME_USE_ESP_WIFI)
-#if defined(BOARD_FAMILY_ESP8266) || defined(ESP8266)
+#if defined(ESP8266)
 #include <ESP8266WiFi.h>
-#elif defined(BOARD_FAMILY_ESP32) || defined(ESP32)
+#elif defined(ESP32)
 #include <WiFi.h>
 #else
 #error "TIME_USE_ESP_WIFI is defined but no ESP8266/ESP32 family was specified."
@@ -13,22 +13,21 @@
 
 #include "OnboardFilterHardware.h"
 #include "TxController.h"
-#include "time_sync/WSPRTxSyncDummy.h"
-#include "time_sync/WSPRTxSyncNTP.h"
 #include "tx_hardware/TxHardwareDummy.h"
 #include "tx_hardware/TxHardwareSI5351.h"
 #include "tx_parameters_controller/TxParametersControllerLittleFS.h"
-#include "wifi_parameters_configurator/WiFiParametersConfiguratorSerial.h"
-#include "wifi_parameters_controller/WifiParametersControllerLittleFS.h"
+#include "secrets.h"
 
-#define CONFIGURATION_PIN D6
 #define DRIVER_AMP_ENABLE_PIN D5
 
 OnboardFilterHardware filter_hardware(0x20);
 
 #if defined(TIME_USE_ESP_WIFI)
+#include "time_sync/WSPRTxSyncNTP.h"
+
 WSPRTxSyncNTP tx_sync("uk.pool.ntp.org");
 #elif defined(TIME_USE_DUMMY)
+#include "time_sync/WSPRTxSyncDummy.h"
 WSPRTxSyncDummy tx_sync(1);
 #else
 #error "Select a time sync method (e.g., TIME_USE_ESP_WIFI or TIME_USE_DUMMY)."
@@ -42,99 +41,57 @@ TxHardwareDummy tx_hardware(10000);
 #error "Select a TX hardware (e.g., TX_HARDWARE_USE_SI5351 or TX_HARDWARE_USE_DUMMY)."
 #endif
 
-TxParametersControllerLittleFs tx_parameters_controller;
-WiFiParametersConfiguratorSerial wifi_parameters_configurator;
-WiFiParametersControllerLittleFS wifi_parameters_controller;
-
 TxController tx_controller;
+TxParametersControllerLittleFs tx_parameters_controller;
 
-static inline void disable_driver_amplifier()
+static inline void disable_amplifier()
 {
     pinMode(DRIVER_AMP_ENABLE_PIN, OUTPUT);
     digitalWrite(DRIVER_AMP_ENABLE_PIN, LOW);
 }
 
-static inline void enable_driver_amplifier()
+static inline void enable_amplifier()
 {
     pinMode(DRIVER_AMP_ENABLE_PIN, OUTPUT);
     digitalWrite(DRIVER_AMP_ENABLE_PIN, HIGH);
 }
 
-static inline void keep_warm()
-{
-    filter_hardware.disable_all_filters();
-    filter_hardware.enable_sub_megahertz_dump();
-    tx_hardware.output_constant_tone(
-        TxParameters(100000, 0, TxParameters::DriveStrength::MEDIUM_POWER));
-}
-
-static void disable_keep_warm()
-{
-    filter_hardware.disable_all_filters();
-    filter_hardware.disable_sub_megahertz_dump();
-    tx_hardware.disable_output();
-}
-
 void setup()
 {
     Serial.begin(115200);
-    pinMode(CONFIGURATION_PIN, INPUT_PULLUP);
-    delay(2000); // Allow time for serial monitor to connect
+    delay(1000); // Allow time for serial monitor to connect
     Wire.begin();
 
+    tx_hardware.begin();
     filter_hardware.begin();
     tx_parameters_controller.begin();
+    // tx_parameters_controller.wipe_all_storage(); // For testing purposes only; remove in production
+    // tx_parameters_controller.set_callsign(WSPR_CALLSIGN);
+    // tx_parameters_controller.set_locator(WSPR_GRIDSQUARE);
+    // tx_parameters_controller.set_20m_tx_frequency(14095600);
+    // tx_parameters_controller.set_20m_tx_correction(13000);
+    // tx_parameters_controller.set_20m_tx_drive_strength(TxParameters::DriveStrength::HIGH_POWER);
+    // tx_parameters_controller.set_20m_tx_power_dbm(20);
 
-#if defined(TIME_USE_ESP_WIFI)
-    wifi_parameters_controller.begin();
-#endif
+    // tx_parameters_controller.set_15m_tx_frequency(21095600);
+    // tx_parameters_controller.set_15m_tx_correction(60000);
+    // tx_parameters_controller.set_15m_tx_drive_strength(TxParameters::DriveStrength::MEDIUM_POWER);
+    // tx_parameters_controller.set_15m_tx_power_dbm(17);
 
-    if (digitalRead(CONFIGURATION_PIN) == LOW)
-    {
-        uint32_t start_time = millis();
-        while (digitalRead(CONFIGURATION_PIN) == LOW)
-        {
-            if (millis() - start_time > 2000)
-            {
-                Serial.println("Entering configuration mode...");
-                wifi_parameters_configurator.begin(wifi_parameters_controller);
-                wifi_parameters_configurator.set_ssid();
-                wifi_parameters_configurator.set_password();
-                Serial.println("Configuration mode finished.");
-                break;
-            }
-            yield();
-        }
-    }
+    // tx_parameters_controller.set_10m_tx_frequency(28124600);
+    // tx_parameters_controller.set_10m_tx_correction(12500);
+    // tx_parameters_controller.set_10m_tx_drive_strength(TxParameters::DriveStrength::MEDIUM_POWER);
+    // tx_parameters_controller.set_10m_tx_power_dbm(17);
 
-    Serial.println("Keeping warm");
-    keep_warm();
-    Serial.println("Starting WSPR transmitter...");
-
-    tx_controller.begin(&tx_hardware, &filter_hardware, &tx_sync, &tx_parameters_controller);
-
-    tx_controller.attach_pre_tx_function(
-        []()
-        {
-            disable_keep_warm();
-            enable_driver_amplifier();
-            Serial.println("Pre-transmission function: Driver amplifier enabled.");
-        });
-
-    tx_controller.attach_post_tx_function(
-        []()
-        {
-            disable_driver_amplifier();
-            keep_warm();
-            Serial.println("Post-transmission function: Driver amplifier disabled.");
-        });
+    tx_controller.begin(&tx_hardware, &filter_hardware, &tx_sync, &tx_parameters_controller,
+                        &enable_amplifier, &disable_amplifier);
 
 #if defined(TIME_USE_ESP_WIFI)
     Serial.println("Connecting to WiFi...");
 #if defined(ESP8266) || defined(BOARD_FAMILY_ESP8266)
     WiFi.mode(WIFI_STA);
 #endif
-    WiFi.begin(wifi_parameters_controller.get_ssid(), wifi_parameters_controller.get_password());
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
     while (WiFi.status() != WL_CONNECTED)
     {
@@ -147,13 +104,11 @@ void setup()
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 #endif
-
-    tx_parameters_controller.set_20m_tx_correction(13500);
 }
 
 void loop()
 {
     tx_controller.transmit_wspr_message_on_20m();
     // tx_controller.transmit_wspr_message_on_15m();
-    // tx_controller.transmit_wspr_message_on_10m();
+    tx_controller.transmit_wspr_message_on_10m();
 }

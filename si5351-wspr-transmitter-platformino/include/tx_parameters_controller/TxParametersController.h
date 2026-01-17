@@ -18,11 +18,12 @@ struct TxParameters
     uint64_t frequency;
     int32_t correction;
     DriveStrength drive_strength;
+    uint8_t power_dbm;
 
-    TxParameters() : frequency(0), correction(0), drive_strength(DriveStrength::MEDIUM_POWER) {}
+    TxParameters() : frequency(0), correction(0), drive_strength(DriveStrength::MEDIUM_POWER), power_dbm(0) {}
 
-    TxParameters(uint64_t freq, int32_t corr, DriveStrength strength)
-        : frequency(freq), correction(corr), drive_strength(strength)
+    TxParameters(uint64_t freq, int32_t corr, DriveStrength strength, uint8_t power)
+        : frequency(freq), correction(corr), drive_strength(strength), power_dbm(power)
     {
     }
 };
@@ -36,32 +37,23 @@ class TxParametersController
     virtual String get_locator() = 0;
     virtual void set_locator(const String &locator) = 0;
 
-    virtual int get_tx_power() = 0;
-    virtual void set_tx_power(int power) = 0;
-
     virtual TxParameters get_tx_params_20m() = 0;
     virtual void set_20m_tx_frequency(uint64_t frequency) = 0;
     virtual void set_20m_tx_correction(int32_t correction) = 0;
     virtual void set_20m_tx_drive_strength(TxParameters::DriveStrength strength) = 0;
-    virtual void enable_20m_tx() = 0;
-    virtual void disable_20m_tx() = 0;
-    virtual bool is_20m_tx_enabled() = 0;
+    virtual void set_20m_tx_power_dbm(uint8_t power_dbm) = 0;
 
     virtual TxParameters get_tx_params_15m() = 0;
     virtual void set_15m_tx_frequency(uint64_t frequency) = 0;
     virtual void set_15m_tx_correction(int32_t correction) = 0;
     virtual void set_15m_tx_drive_strength(TxParameters::DriveStrength strength) = 0;
-    virtual void enable_15m_tx() = 0;
-    virtual void disable_15m_tx() = 0;
-    virtual bool is_15m_tx_enabled() = 0;
+    virtual void set_15m_tx_power_dbm(uint8_t power_dbm) = 0;
 
     virtual TxParameters get_tx_params_10m() = 0;
     virtual void set_10m_tx_frequency(uint64_t frequency) = 0;
     virtual void set_10m_tx_correction(int32_t correction) = 0;
     virtual void set_10m_tx_drive_strength(TxParameters::DriveStrength strength) = 0;
-    virtual void enable_10m_tx() = 0;
-    virtual void disable_10m_tx() = 0;
-    virtual bool is_10m_tx_enabled() = 0;
+    virtual void set_10m_tx_power_dbm(uint8_t power_dbm) = 0;
 };
 
 #endif // TXPARAMETERSCONTROLLER_H

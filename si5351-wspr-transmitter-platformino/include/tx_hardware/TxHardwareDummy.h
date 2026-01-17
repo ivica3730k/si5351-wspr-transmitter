@@ -20,7 +20,7 @@ class TxHardwareDummy : public TxHardware
         uint32_t start_time = millis();
         while (millis() - start_time < tx_duration_millis)
         {
-#ifdef BOARD_FAMILY_ESPRESSIF
+#if defined(ESP8266) || defined(ESP32)
             yield();
 #endif
         }

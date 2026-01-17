@@ -6,6 +6,8 @@
 #include "si5351.h"
 #include "tx_hardware/TxHardware.h"
 
+#include <Wire.h>
+
 class TxHardwareSi5351 : public TxHardware
 {
   public:
@@ -22,6 +24,14 @@ class TxHardwareSi5351 : public TxHardware
     ~TxHardwareSi5351()
     {
         delete this->si5351;
+    }
+
+    void begin()
+    {
+#ifdef DEBUG_TX_HARDWARE_USE_SI5351
+        Serial.println("TxHardwareSi5351: Beginning I2C communication with Si5351...");
+#endif
+        Wire.begin();
     }
 
     void transmit_wspr_message(const TxParameters &tx_params, uint8_t *message) override
@@ -51,7 +61,7 @@ class TxHardwareSi5351 : public TxHardware
             uint32_t target_time = start_time + (i + 1) * symbol_period_us;
             while (micros() < target_time)
             {
-#ifdef BOARD_FAMILY_ESPRESSIF
+#if defined(ESP8266) || defined(ESP32)
                 yield();
 #endif
             }

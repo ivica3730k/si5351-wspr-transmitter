@@ -24,6 +24,7 @@ class OnboardFilterHardware
         Serial.print("OnboardFilterHardware: Begining with I2C address: ");
         Serial.println(this->address, HEX);
 #endif
+        Wire.begin();
         this->mcp = new MCP23017(this->address);
         this->mcp->begin(this->address);
         this->mcp->init();
