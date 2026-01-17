@@ -59,29 +59,29 @@ static inline void enable_amplifier()
 void setup()
 {
     Serial.begin(115200);
-    delay(1000); // Allow time for serial monitor to connect
+    delay(5000); // Allow time for serial monitor to connect
     Wire.begin();
 
     tx_hardware.begin();
     filter_hardware.begin();
     tx_parameters_controller.begin();
     // tx_parameters_controller.wipe_all_storage(); // For testing purposes only; remove in production
-    // tx_parameters_controller.set_callsign(WSPR_CALLSIGN);
-    // tx_parameters_controller.set_locator(WSPR_GRIDSQUARE);
-    // tx_parameters_controller.set_20m_tx_frequency(14095600);
-    // tx_parameters_controller.set_20m_tx_correction(13000);
-    // tx_parameters_controller.set_20m_tx_drive_strength(TxParameters::DriveStrength::HIGH_POWER);
-    // tx_parameters_controller.set_20m_tx_power_dbm(20);
+    tx_parameters_controller.set_callsign(WSPR_CALLSIGN);
+    tx_parameters_controller.set_locator(WSPR_GRIDSQUARE);
+    tx_parameters_controller.set_20m_tx_frequency(14095600);
+    tx_parameters_controller.set_20m_tx_correction(13000);
+    tx_parameters_controller.set_20m_tx_drive_strength(TxParameters::DriveStrength::HIGH_POWER);
+    tx_parameters_controller.set_20m_tx_power_dbm(20);
 
-    // tx_parameters_controller.set_15m_tx_frequency(21095600);
-    // tx_parameters_controller.set_15m_tx_correction(60000);
-    // tx_parameters_controller.set_15m_tx_drive_strength(TxParameters::DriveStrength::MEDIUM_POWER);
-    // tx_parameters_controller.set_15m_tx_power_dbm(17);
+    tx_parameters_controller.set_15m_tx_frequency(21095600);
+    tx_parameters_controller.set_15m_tx_correction(60000);
+    tx_parameters_controller.set_15m_tx_drive_strength(TxParameters::DriveStrength::MEDIUM_POWER);
+    tx_parameters_controller.set_15m_tx_power_dbm(17);
 
-    // tx_parameters_controller.set_10m_tx_frequency(28124600);
-    // tx_parameters_controller.set_10m_tx_correction(12500);
-    // tx_parameters_controller.set_10m_tx_drive_strength(TxParameters::DriveStrength::MEDIUM_POWER);
-    // tx_parameters_controller.set_10m_tx_power_dbm(17);
+    tx_parameters_controller.set_10m_tx_frequency(28124600);
+    tx_parameters_controller.set_10m_tx_correction(12500);
+    tx_parameters_controller.set_10m_tx_drive_strength(TxParameters::DriveStrength::MEDIUM_POWER);
+    tx_parameters_controller.set_10m_tx_power_dbm(17);
 
     tx_controller.begin(&tx_hardware, &filter_hardware, &tx_sync, &tx_parameters_controller,
                         &enable_amplifier, &disable_amplifier);
